@@ -1,3 +1,30 @@
+# If Z3 was built using the CMake buildsystem then it provides its own
+# ``Z3Config.cmake`` file for use with the :command:`find_package` command's
+# config mode. This module looks for this file and, if found,
+# returns its results with no further action.
+#
+# Set ``Z3_NO_Z3_CMAKE`` to ``ON`` to disable this search.
+#
+# This file is partly modeled off of CMake's included FindCURL.cmake file
+
+include(FindPackageHandleStandardArgs)
+
+# Try first to find Z3 using its stock cmake files unless the user has provided
+# a Z3_ROOT hint that would assume skipping the CONFIG option
+if(NOT DEFINED Z3_ROOT AND NOT Z3_NO_Z3_CMAKE)
+  # do a find package call to specifically look for the CMake version
+  # of z3
+  find_package(Z3 QUIET NO_MODULE)
+  mark_as_advanced(Z3_DIR)
+
+  # if we found the z3 cmake package then we are done, and
+  # can print what we found and return.
+  if(Z3_FOUND)
+    find_package_handle_standard_args(Z3 HANDLE_COMPONENTS CONFIG_MODE)
+    return()
+  endif()
+endif()
+
 INCLUDE(CheckCXXSourceRuns)
 
 # Function to check Z3's version
